@@ -56,10 +56,10 @@ async function run() {
     //   });
 
     //get class data
-    // app.get('/class', async (req, res) => {
-    //     const result = await classCollection.find().toArray();
-    //     res.send(result);
-    //   });
+    app.get('/class', async (req, res) => {
+        const result = await classCollection.find().toArray();
+        res.send(result);
+      });
 
     // Post class data
     app.post('/class', async (req, res) => {
