@@ -157,12 +157,20 @@ async function run() {
         })
 
 
-        //get class data
+        //Instructor get class data
 
         app.get('/class', async (req, res) => {
             const result = await classCollection.find().toArray();
             res.send(result);
         });
+
+        //get one specific data
+        app.get('/class/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: new ObjectId(id) }
+            const result = await classCollection.findOne(query)
+            res.send(result)
+        })
 
         // Post class data
         app.post('/class', async (req, res) => {
