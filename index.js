@@ -109,8 +109,6 @@ async function run() {
             const result = { instructor: user?.role === 'instructor' }
             res.send(result);
           })
-        
-      
 
         app.patch('/users/admin/:id', async (req, res) => {
             const id = req.params.id;
