@@ -2,6 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 
+const jwt = require('jsonwebtoken');
 require('dotenv').config()
 
 const app = express();
@@ -80,8 +81,6 @@ async function run() {
         const result = await usersCollection.updateOne(filter, updateDoc);
         res.send(result);
       })
-
-
 
 
     //get class data
