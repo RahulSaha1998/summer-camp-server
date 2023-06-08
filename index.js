@@ -179,6 +179,24 @@ async function run() {
             res.send(result);
         });
 
+        //update
+    app.put('/class/:id', async (req, res) => {
+        const id = req.params.id;
+        const query = { _id: new ObjectId(id) }
+        const options = { upsert: true}
+        const addedClass = req.body;         
+              const item = {
+                  $set: {
+                      class_name: addedClass.name,
+                      price: addedClass.price,
+                      seat: addedClass.seat,
+                  }
+              }
+  
+              const result = await classCollection.updateOne(query, item, options);
+              res.send(result);
+      })
+
 
 
 
