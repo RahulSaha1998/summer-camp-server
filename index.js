@@ -130,6 +130,38 @@ async function run() {
             res.send(result);
         })
 
+        //Admin approve
+        app.patch('/users/status/:id', async (req, res) => {
+            const id = req.params.id;
+            const filter = { _id: new ObjectId(id) };
+            const updateDoc = {
+                $set: {
+                    status: 'approved',
+                },
+            };
+            const result = await classCollection.updateOne(filter, updateDoc);
+            res.send(result);
+        })
+
+        //Admin feedback
+        app.patch('/users/feedback/:id', async (req, res) => {
+            try {
+              const id = req.params.id;
+              const filter = { _id: new ObjectId(id) };
+              const updateDoc = {
+                $set: {
+                  feedback: req.body.feedback,
+                },
+              };
+              const result = await classCollection.updateOne(filter, updateDoc);
+              res.send(result);
+            } catch (error) {
+              res.status(500).send(error);
+            }
+          });
+          
+          
+        //Set Admin ROle
         app.patch('/users/admin/:id', async (req, res) => {
             const id = req.params.id;
             const filter = { _id: new ObjectId(id) };
@@ -138,11 +170,10 @@ async function run() {
                     role: 'admin'
                 },
             };
-
             const result = await usersCollection.updateOne(filter, updateDoc);
             res.send(result);
         })
-
+        //Set instructor Role
         app.patch('/users/instructor/:id', async (req, res) => {
             const id = req.params.id;
             const filter = { _id: new ObjectId(id) };
@@ -157,8 +188,9 @@ async function run() {
         })
 
 
-        //Instructor get class data
+        //-----------------Instructor--------------------- 
 
+        //get all class data
         app.get('/class', async (req, res) => {
             const result = await classCollection.find().toArray();
             res.send(result);
@@ -172,6 +204,17 @@ async function run() {
             res.send(result)
         })
 
+        //get some data
+        app.get('/someClass', async (req, res) => {
+            console.log(req.query.email);
+            let query = {};
+            if (req.query?.email) {
+                query = { email: req.query.email }
+            }
+            const result = await classCollection.find(query).toArray();
+            res.send(result);
+        });
+
         // Post class data
         app.post('/class', async (req, res) => {
             const addedItem = req.body;
@@ -180,22 +223,22 @@ async function run() {
         });
 
         //update
-    app.put('/class/:id', async (req, res) => {
-        const id = req.params.id;
-        const query = { _id: new ObjectId(id) }
-        const options = { upsert: true}
-        const addedClass = req.body;         
-              const item = {
-                  $set: {
-                      class_name: addedClass.name,
-                      price: addedClass.price,
-                      seat: addedClass.seat,
-                  }
-              }
-  
-              const result = await classCollection.updateOne(query, item, options);
-              res.send(result);
-      })
+        app.put('/class/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: new ObjectId(id) }
+            const options = { upsert: true }
+            const addedClass = req.body;
+            const item = {
+                $set: {
+                    class_name: addedClass.name,
+                    price: addedClass.price,
+                    seat: addedClass.seat,
+                }
+            }
+
+            const result = await classCollection.updateOne(query, item, options);
+            res.send(result);
+        })
 
 
 
