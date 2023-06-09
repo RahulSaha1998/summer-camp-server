@@ -143,6 +143,20 @@ async function run() {
             res.send(result);
         })
 
+
+        //Admin denied
+        app.patch('/users/denied/:id', async (req, res) => {
+            const id = req.params.id;
+            const filter = { _id: new ObjectId(id) };
+            const updateDoc = {
+                $set: {
+                    status: 'denied',
+                },
+            };
+            const result = await classCollection.updateOne(filter, updateDoc);
+            res.send(result);
+        })
+
         //Admin feedback
         app.patch('/users/feedback/:id', async (req, res) => {
             try {
