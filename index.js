@@ -84,10 +84,15 @@ async function run() {
 
 
         //admin panel users data
-        app.get('/users', verifyJWT, verifyAdmin, async (req, res) => {
+        app.get('/users', async (req, res) => {
             const result = await usersCollection.find().toArray();
             res.send(result);
         });
+
+        app.get('/instructors', async (req, res) => {
+            const result = await usersCollection.find({ role: 'instructor' }).toArray();
+            res.send(result);
+          });
 
         //admin panel post data
         app.post('/users', async (req, res) => {
