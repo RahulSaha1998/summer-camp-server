@@ -52,6 +52,7 @@ async function run() {
         const db = client.db('summerCamp');
         const classCollection = db.collection('class');
         const usersCollection = db.collection('users');
+        const cartsCollection = db.collection('carts');
 
 
         app.post('/jwt', (req, res) => {
@@ -83,16 +84,25 @@ async function run() {
 
 
 
+        //Student pannel
+        app.get('/instructors', async (req, res) => {
+            const result = await usersCollection.find({ role: 'instructor' }).toArray();
+            res.send(result);
+        });
+
+        app.get('/approvedClass', async (req, res) => {
+            const result = await classCollection.find({ status: 'approved' }).toArray();
+            res.send(result);
+        });
+
+
+        //------------------Admin----------------------------
+
         //admin panel users data
         app.get('/users', async (req, res) => {
             const result = await usersCollection.find().toArray();
             res.send(result);
         });
-
-        app.get('/instructors', async (req, res) => {
-            const result = await usersCollection.find({ role: 'instructor' }).toArray();
-            res.send(result);
-          });
 
         //admin panel post data
         app.post('/users', async (req, res) => {
@@ -165,21 +175,21 @@ async function run() {
         //Admin feedback
         app.patch('/users/feedback/:id', async (req, res) => {
             try {
-              const id = req.params.id;
-              const filter = { _id: new ObjectId(id) };
-              const updateDoc = {
-                $set: {
-                  feedback: req.body.feedback,
-                },
-              };
-              const result = await classCollection.updateOne(filter, updateDoc);
-              res.send(result);
+                const id = req.params.id;
+                const filter = { _id: new ObjectId(id) };
+                const updateDoc = {
+                    $set: {
+                        feedback: req.body.feedback,
+                    },
+                };
+                const result = await classCollection.updateOne(filter, updateDoc);
+                res.send(result);
             } catch (error) {
-              res.status(500).send(error);
+                res.status(500).send(error);
             }
-          });
-          
-          
+        });
+
+
         //Set Admin ROle
         app.patch('/users/admin/:id', async (req, res) => {
             const id = req.params.id;
@@ -259,8 +269,41 @@ async function run() {
             res.send(result);
         })
 
+        //---------------------Student----------------------
+        app.get('/carts', async (req, res) => {
+            const email = req.query.email;
 
+            if (!email) {
+                res.send([]);
+            }
 
+            const query = { email: email };
+            const result = await cartsCollection.find(query).toArray();
+            res.send(result);
+        });
+
+        app.post('/carts', async (req, res) => {
+            const item = req.body;
+            const result = await cartsCollection.insertOne(item);
+            res.send(result);
+        })
+
+        // app.post('/carts', async (req, res) => {
+        //     const item = req.body;
+        //     const existingItem = await cartsCollection.findOne({ email: item.email });
+          
+        //       const result = await cartsCollection.insertOne(item);
+        //       res.send(result);
+            
+        //   });
+          
+
+        // app.delete('/carts/:id', async (req, res) => {
+        //     const id = req.params.id;
+        //     const query = { _id: new ObjectId(id) };
+        //     const result = await cartCollection.deleteOne(query);
+        //     res.send(result);
+        // })
 
 
 
