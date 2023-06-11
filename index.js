@@ -326,12 +326,22 @@ async function run() {
         })
 
         // payment related api
-        app.post('/payments',  async (req, res) => {
+        //show payment data for specific user 
+        app.get('/payments', async (req, res) => {
+            let query = {};
+            if (req.query?.email) {
+              query = { email: req.query.email }
+            }
+                    
+            const result = await paymentCollection.find(query).sort({ date: -1 }).toArray();
+            res.send(result);
+          });
+
+
+        app.post('/payments', async (req, res) => {
             const payment = req.body;
             const insertResult = await paymentCollection.insertOne(payment);
 
-            // const id = req.params.id;
-            // const query = { _id: new ObjectId(id) };
             const query = { classId: payment.classId };
             const deleteResult = await cartsCollection.deleteOne(query);
 
@@ -339,26 +349,7 @@ async function run() {
         })
 
 
-        // app.post('/payments', async (req, res) => {
-        //     const payment = req.body;
-        //     const insertResult = await paymentCollection.insertOne(payment);
 
-        //     const query = {
-        //         _id: { $in: payment.cartId.map(id => new ObjectId(id)) },
-        //         classId: payment.classId // Add condition for classId matching
-        //     };
-
-        //     const deleteResult = await cartsCollection.deleteOne(query);
-
-        //     res.send({ insertResult, deleteResult });
-        // });
-
-
-        // app.post('/payments', async (req, res) => {
-        //     const payment = req.body;
-        //     const insertResult = await paymentCollection.insertOne(payment);
-        //     res.send(insertResult)
-        // })
 
 
 
