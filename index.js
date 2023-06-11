@@ -338,15 +338,51 @@ async function run() {
           });
 
 
+        // app.post('/payments', async (req, res) => {
+        //     const payment = req.body;
+        //     const insertResult = await paymentCollection.insertOne(payment);
+
+        //     const query = { classId: payment.classId };
+        //     const deleteResult = await cartsCollection.deleteOne(query);
+
+        //     // const updateResult = await classCollection.updateOne(query);
+
+        //     res.send({ insertResult, deleteResult });
+        // })
+
         app.post('/payments', async (req, res) => {
-            const payment = req.body;
-            const insertResult = await paymentCollection.insertOne(payment);
-
-            const query = { classId: payment.classId };
-            const deleteResult = await cartsCollection.deleteOne(query);
-
-            res.send({ insertResult, deleteResult });
-        })
+            try {
+              const payment = req.body;
+              const insertResult = await paymentCollection.insertOne(payment);
+          
+              const query = { classId: payment.classId };
+              const cart = await cartsCollection.findOne(query);
+              if (!cart) {
+                return res.status(404).send({ error: true, message: 'Cart not found' });
+              }
+          
+              const updateClassQuery = { _id: new ObjectId(cart.classId) };
+              const classUpdate = {
+                $inc: { enClass: 1, seat: -1 },
+                $currentDate: { updatedAt: true }
+              };
+              const updateResult = await classCollection.updateOne(updateClassQuery, classUpdate);
+              if (updateResult.modifiedCount !== 1) {
+                return res.status(500).send({ error: true, message: 'Failed to update class' });
+              }
+          
+              const deleteResult = await cartsCollection.deleteOne(query);
+              if (deleteResult.deletedCount !== 1) {
+                return res.status(500).send({ error: true, message: 'Failed to delete cart' });
+              }
+          
+              res.send({ insertResult, deleteResult });
+            } catch (error) {
+              console.error(error);
+              res.status(500).send({ error: true, message: 'Internal server error' });
+            }
+          });
+          
 
 
 
