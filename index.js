@@ -326,15 +326,17 @@ async function run() {
         })
 
         // payment related api
-        // app.post('/payments',  async (req, res) => {
-        //     const payment = req.body;
-        //     const insertResult = await paymentCollection.insertOne(payment);
+        app.post('/payments',  async (req, res) => {
+            const payment = req.body;
+            const insertResult = await paymentCollection.insertOne(payment);
 
-        //     const query = { _id: { $in: payment.cartItems.map(id => new ObjectId(id)) } }
-        //     const deleteResult = await cartsCollection.deleteMany(query)
+            // const id = req.params.id;
+            // const query = { _id: new ObjectId(id) };
+            const query = { classId: payment.classId };
+            const deleteResult = await cartsCollection.deleteOne(query);
 
-        //     res.send({ insertResult, deleteResult });
-        // })
+            res.send({ insertResult, deleteResult });
+        })
 
 
         // app.post('/payments', async (req, res) => {
@@ -352,11 +354,11 @@ async function run() {
         // });
 
 
-        app.post('/payments', async (req, res) => {
-            const payment = req.body;
-            const insertResult = await paymentCollection.insertOne(payment);
-            res.send(insertResult)
-        })
+        // app.post('/payments', async (req, res) => {
+        //     const payment = req.body;
+        //     const insertResult = await paymentCollection.insertOne(payment);
+        //     res.send(insertResult)
+        // })
 
 
 
