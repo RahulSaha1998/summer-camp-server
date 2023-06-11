@@ -227,6 +227,17 @@ async function run() {
             res.send(result);
         });
 
+        app.get('/topClass', async (req, res) => {
+            try {
+              const result = await classCollection.find().sort({ enClass: -1 }).limit(6).toArray();
+              res.send(result);
+            } catch (error) {
+              console.error(error);
+              res.status(500).send({ error: true, message: 'Internal server error' });
+            }
+          });
+          
+
         //get one specific data
         app.get('/class/:id', async (req, res) => {
             const id = req.params.id;
@@ -298,6 +309,15 @@ async function run() {
 
         app.post('/carts', async (req, res) => {
             const item = req.body;
+
+            const existingCarts = await cartsCollection.findOne(item);
+
+            if(existingCarts){
+                console.log(existingCarts);
+                res.status(400).send('Selected class already exists');
+                return;
+            }
+
             const result = await cartsCollection.insertOne(item);
             res.send(result);
         })
@@ -345,8 +365,6 @@ async function run() {
         //     const query = { classId: payment.classId };
         //     const deleteResult = await cartsCollection.deleteOne(query);
 
-        //     // const updateResult = await classCollection.updateOne(query);
-
         //     res.send({ insertResult, deleteResult });
         // })
 
@@ -372,6 +390,7 @@ async function run() {
               }
           
               const deleteResult = await cartsCollection.deleteOne(query);
+
               if (deleteResult.deletedCount !== 1) {
                 return res.status(500).send({ error: true, message: 'Failed to delete cart' });
               }
