@@ -92,6 +92,11 @@ async function run() {
             res.send(result);
         });
 
+        app.get('/topInstructors', async (req, res) => {
+            const result = await usersCollection.find({ role: 'instructor' }).limit(6).toArray();
+            res.send(result);
+        });
+
         app.get('/approvedClass', async (req, res) => {
             const result = await classCollection.find({ status: 'approved' }).toArray();
             res.send(result);
